@@ -1,5 +1,6 @@
 #include<iostream>
-#include "lexer.h"
+#include"lexer.h"
+#include"parser.h"
 using namespace std;
 int main() {
     cout<<"compiler has started!"<<endl;
@@ -8,5 +9,7 @@ int main() {
     for (auto i:t) {
         cout<<i.type<<" -> "<<i.lexeme<< endl;
     }
+    parser();
+    cout<<"parsing complete\n";
     return 0;
 }

@@ -54,12 +54,12 @@ void lexer() {
             t.push_back({"AND","&&"});
         }
 
-        else if (ch=='(')   t.push_back({"LPAREN","{"});
-        else if (ch==')')   t.push_back({"RPAREN","}"});
+        else if (ch=='{')   t.push_back({"LBRACE","{"});
+        else if (ch=='}')   t.push_back({"RBRACE","}"});
         else if (ch=='[')   t.push_back({"LBRACKET","["});
         else if (ch==']')   t.push_back({"RBRACKET","]"});
-        else if (ch=='{')   t.push_back({"LBRACE","("});
-        else if (ch=='}')   t.push_back({"RBRACE",")"});
+        else if (ch=='(')   t.push_back({"LPAREN","("});
+        else if (ch==')')   t.push_back({"RPAREN",")"});
         else if (ch==';')   t.push_back({"SEMI",";"});
         else if (ch==',')   t.push_back({"COMMA",","});
     }
