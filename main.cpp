@@ -11,5 +11,6 @@ int main() {
     }
     parser();
     cout<<"parsing complete\n";
+    generate_code();
     return 0;
 }
