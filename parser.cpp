@@ -11,12 +11,30 @@ void match(string next) {
     }
 }
 
+void expression() {
+    if (t[pos].type=="NUMBER" || t[pos].type=="IDENTIFIER") pos++;
+    else {
+        cout<<"invalid expression\n";
+        exit(1);
+    }
+    while (t[pos].type=="PLUS" || t[pos].type=="MINUS" || t[pos].type=="STAR" || t[pos].type=="SLASH" || t[pos].type=="MOD" )   {
+        pos++;
+        if (t[pos].type=="IDENTIFIER" || t[pos].type=="NUMBER") {
+            pos++;
+        }
+        else {
+            cout<<"invalid identifier\n";
+            exit(1);
+        }
+    }
+}
+
 void declaration() {
     match("INT");
     match("IDENTIFIER");
     if (t[pos].type=="ASSIGN") {
         match("ASSIGN");
-        match("NUMBER");
+        expression();
     }
     else {
         while(t[pos].type=="COMMA") {
@@ -30,7 +48,7 @@ void declaration() {
 void assignment() {
     match("IDENTIFIER");
     match("ASSIGN");
-    match("NUMBER");
+    expression();
     match("SEMI");
 }
 
