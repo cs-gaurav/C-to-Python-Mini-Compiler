@@ -1,6 +1,7 @@
 #include<iostream>
 #include"lexer.h"
 #include"parser.h"
+#include<codegen.h>
 using namespace std;
 int main() {
     cout<<"compiler has started!"<<endl;
