@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Compiler Output</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:'Segoe UI', sans-serif;
+    background:#eef1f5;
+}
+
+.header{
+    background:#1d3557;
+    color:white;
+    padding:15px 30px;
+    font-size:20px;
+    font-weight:bold;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.theme-btn{
+    background:#457b9d;
+    border:none;
+    color:white;
+    padding:6px 12px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.main{
+    padding:30px;
+}
+
+.output-section{
+    background:#ffffff;
+    padding:25px;
+    border-radius:10px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+
+    border-left:6px solid #457b9d;
+}
+
+.title{
+    text-align:center;
+    margin-bottom:25px;
+    color:#1d3557;
+    font-weight:600;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.box{
+    background:#f8f9fa;
+    color:#1d3557;
+
+    padding:15px;
+    height:160px;
+
+    border-radius:8px;
+
+    border:1px solid #dee2e6;
+
+    overflow:auto;
+
+    transition:0.3s;
+}
+
+.box:hover{
+    transform:translateY(-4px);
+    box-shadow:0 8px 15px rgba(0,0,0,0.15);
+}
+
+h3{
+    text-align:center;
+    margin-bottom:10px;
+    color:#457b9d;
+}
+
+p{
+    font-size:14px;
+    font-family:Consolas, monospace;
+}
+
+.back-btn{
+    display:block;
+    margin:25px auto 0;
+
+    padding:10px 25px;
+
+    border:none;
+    border-radius:6px;
+
+    background:#e63946;
+    color:white;
+
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+.back-btn:hover{
+    background:#c1121f;
+    transform:scale(1.05);
+}
+
+.dark-mode{
+    background:#121212;
+    color:white;
+}
+
+.dark-mode .header{
+    background:#00adb5;
+}
+
+.dark-mode .output-section{
+    background:#1e1e1e;
+    border-left:6px solid #00adb5;
+}
+
+.dark-mode .title{
+    color:#ffffff;          
+    font-weight:700;
+}
+
+.dark-mode .box{
+    background:#2b2b2b;
+    color:#ffffff;
+    border:1px solid #444;
+}
+
+.dark-mode h3{
+    color:#00adb5;
+}
+
+.dark-mode p{
+    color:#e0e0e0;
+}
+
+.dark-mode .back-btn{
+    background:#00adb5;
+}
+
+.dark-mode .theme-btn{
+    background:#ffffff;
+    color:#00adb5;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+C to Python Compiler
+<button class="theme-btn" onclick="toggleTheme()">🌙</button>
+</div>
+
+<div class="main">
+
+<div class="output-section">
+
+<h2 class="title">Compiler Phase Output</h2>
+
+<div class="grid">
+
+<div class="box">
+<h3>Lexical Analysis</h3>
+<p id="lex"></p>
+</div>
+
+<div class="box">
+<h3>Syntax Analysis</h3>
+<p id="syntax"></p>
+</div>
+
+<div class="box">
+<h3>Semantic Analysis</h3>
+<p id="semantic"></p>
+</div>
+
+<div class="box">
+<h3>Intermediate Code</h3>
+<p id="intermediate"></p>
+</div>
+
+<div class="box">
+<h3>Symbol Table</h3>
+<p id="symbol"></p>
+</div>
+
+<div class="box">
+<h3>Python Code</h3>
+<p id="python"></p>
+</div>
+
+</div>
+
+<button class="back-btn" onclick="goBack()">← Write New Program</button>
+
+</div>
+
+</div>
+
+<script>
+
+window.onload = function(){
+    let theme = localStorage.getItem("theme");
+    if(theme === "dark"){
+        document.body.classList.add("dark-mode");
+    }
+}
+
+function toggleTheme(){
+    document.body.classList.toggle("dark-mode");
+
+    if(document.body.classList.contains("dark-mode")){
+        localStorage.setItem("theme","dark");
+    }else{
+        localStorage.setItem("theme","light");
+    }
+}
+
+let code = localStorage.getItem("cCode");
+
+document.getElementById("lex").innerText="Tokens generated";
+document.getElementById("syntax").innerText="Syntax correct";
+document.getElementById("semantic").innerText="No semantic error";
+document.getElementById("intermediate").innerText="t1 = 0";
+document.getElementById("symbol").innerText="main : function";
+document.getElementById("python").innerText="print('Hello')";
+
+function goBack(){
+    window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>

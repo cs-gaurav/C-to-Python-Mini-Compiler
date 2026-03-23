@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom Compiler</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:'Segoe UI', sans-serif;
+    background:#eef1f5;
+}
+
+.navbar{
+    background:#1d3557;
+    color:white;
+    padding:15px 30px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.navbar a{
+    color:white;
+    text-decoration:none;
+    font-size:16px;
+    font-weight:500;
+}
+
+.header{
+    background:#1d3557;
+    color:white;
+    padding:15px 30px;
+    font-size:20px;
+    font-weight:bold;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.theme-btn{
+    background:#457b9d;
+    border:none;
+    color:white;
+    padding:6px 12px;
+    border-radius:5px;
+    cursor:pointer;
+}
+.main{
+    padding:30px;
+}
+.editor-section{
+    background:#ffffff;
+    padding:25px;
+    border-radius:10px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+
+    border-left:6px solid #457b9d;
+}
+.section-title{
+    margin-bottom:12px;
+    color:#1d3557;
+    font-weight:600;
+}
+textarea{
+    width:100%;
+    height:280px;
+
+    border:none;
+    border-radius:6px;
+
+    padding:15px;
+
+    font-size:15px;
+    font-family:Consolas, monospace;
+
+    background:#f8f9fa;
+
+    outline:none;
+
+    box-sizing:border-box;
+}
+.info{
+    margin-top:8px;
+    font-size:14px;
+    color:#555;
+}
+.button-area{
+    margin-top:20px;
+    text-align:center;
+}
+button{
+    padding:12px 25px;
+    margin:5px;
+
+    border:none;
+    border-radius:6px;
+
+    background:#e63946;
+    color:white;
+
+    font-size:15px;
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+button:hover{
+    background:#c1121f;
+    transform:scale(1.05);
+}
+
+
+
+.dark-mode{
+    background:#121212;
+    color:white;
+}
+
+.dark-mode .header{
+    background:#00adb5;
+}
+
+.dark-mode .navbar{
+    background:#00adb5;
+}
+
+.dark-mode .editor-section{
+    background:#1e1e1e;
+    border-left:6px solid #00adb5;
+}
+
+.dark-mode textarea{
+    background:#2b2b2b;
+    color:#ffffff;
+}
+
+.dark-mode button{
+    background:#00adb5;
+}
+
+.dark-mode .section-title{
+    color:#ffffff;
+}
+
+.dark-mode .theme-btn{
+    background:#ffffff;
+    color:#00adb5;
+}
+
+.dark-mode .info{
+    color:#ccc;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<div class="navbar">
+    <a href="#" onclick="goHome()">Compiler</a>
+    <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+</div>
+
+
+<div class="main">
+
+<div class="editor-section">
+
+<div class="section-title">Enter C Program</div>
+
+<textarea id="code" placeholder="// Write your C code here..."></textarea>
+
+<p class="info" id="info">Lines: 0 | Characters: 0</p>
+
+<div class="button-area">
+<button onclick="submitCode()">Run Compiler</button>
+<button onclick="clearCode()">Clear</button>
+</div>
+</div>
+</div>
+<script>
+document.getElementById("code").addEventListener("input", function(){
+
+    let text = this.value;
+
+    let lines = text.split("\n").length;
+    let chars = text.length;
+
+    document.getElementById("info").innerText =
+    "Lines: " + lines + " | Characters: " + chars;
+});
+function clearCode(){
+    document.getElementById("code").value="";
+    document.getElementById("info").innerText="Lines: 0 | Characters: 0";
+}
+function submitCode(){
+    let code = document.getElementById("code").value;
+
+    if(code.trim() === ""){
+        alert("Please enter C code first!");
+        return;
+    }
+    localStorage.setItem("cCode",code);
+    window.location.href="output.html";
+}
+function goHome(){
+    localStorage.removeItem("cCode");
+    window.location.href="index.html";
+}
+function toggleTheme(){
+    document.body.classList.toggle("dark-mode");
+
+    if(document.body.classList.contains("dark-mode")){
+        localStorage.setItem("theme","dark");
+    }else{
+        localStorage.setItem("theme","light");
+    }
+}
+window.onload = function(){
+
+    let theme = localStorage.getItem("theme");
+
+    if(theme === "dark"){
+        document.body.classList.add("dark-mode");
+    }
+}
+</script>
+</body>
+</html>
