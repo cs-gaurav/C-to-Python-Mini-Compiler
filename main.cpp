@@ -1,7 +1,8 @@
 #include<iostream>
 #include"lexer.h"
 #include"parser.h"
-#include<codegen.h>
+#include"codegen.h"
+#include"semantic.h"
 using namespace std;
 int main() {
     cout<<"compiler has started!"<<endl;
@@ -12,6 +13,7 @@ int main() {
     }
     parser();
     cout<<"parsing complete\n";
+    semantic_analyzer();
     generate_code();
     return 0;
 }
