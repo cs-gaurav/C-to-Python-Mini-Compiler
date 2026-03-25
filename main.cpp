@@ -1,8 +1,9 @@
 #include<iostream>
 #include"lexer.h"
 #include"parser.h"
-#include"codegen.h"
 #include"semantic.h"
+#include "inter.h"
+#include "target.h"
 using namespace std;
 int main() {
     cout<<"compiler has started!"<<endl;
@@ -11,9 +12,12 @@ int main() {
     for (auto i:t) {
         cout<<i.type<<" -> "<<i.lexeme<< endl;
     }
+    cout<<endl;
     parser();
-    cout<<"parsing complete\n";
+    cout<<"Parsing complete\n";
     semantic_analyzer();
-    generate_code();
+    intermediate_code();
+    target_code();
     return 0;
 }
+
