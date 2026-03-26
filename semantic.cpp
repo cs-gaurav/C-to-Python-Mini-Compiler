@@ -34,7 +34,6 @@ int expression(int i) {
     else if(t[i].type!="NUMBER") {
         error("Invalid expression");
     }
-
     i++;
 
     while(t[i].type=="PLUS" || t[i].type=="MINUS" ||
@@ -48,10 +47,8 @@ int expression(int i) {
         else if(t[i].type!="NUMBER") {
             error("Invalid expression");
         }
-
         i++;
     }
-
     return i;
 }
 
@@ -65,10 +62,8 @@ void semantic_analyzer() {
     if (t[i].type=="LBRACE") i++;
 
     while(t[i].type!="EOF" && t[i].type!="RBRACE") {
-
         if(t[i].type=="INT") {
             i++;
-
             while(true) {
                 string name = t[i].lexeme;
 
@@ -96,7 +91,6 @@ void semantic_analyzer() {
 
             i++;
         }
-
         else if(t[i].type=="IDENTIFIER") {
             string name = t[i].lexeme;
 
@@ -115,10 +109,8 @@ void semantic_analyzer() {
 
             if(t[i].type!="SEMI")
                 error("Missing ;");
-
             i++;
         }
-
         else if(t[i].type=="RETURN") {
             i++;
 
@@ -134,11 +126,9 @@ void semantic_analyzer() {
 
             i++;
         }
-
         else {
             error("Invalid statement\n");
         }
     }
-
     cout<<"Semantic analysis done\n";
 }

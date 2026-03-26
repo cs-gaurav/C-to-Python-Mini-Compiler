@@ -44,7 +44,6 @@ string expression(int &i) {
 
         left = temp;
     }
-
     return left;
 }
 
@@ -105,12 +104,11 @@ void intermediate_code() {
             }
             i++;
         }
-
         else if (t[i].type=="RETURN") {
             i++;
 
             if (t[i].type=="NUMBER") {
-                cout<<"return "<<t[i].lexeme<<endl;
+                // cout<<"return "<<t[i].lexeme<<endl;
                 i++;
             }
             else {
@@ -124,12 +122,10 @@ void intermediate_code() {
             }
             i++;
         }
-
         else {
             cout<<"Invalid statement\n";
             exit(1);
         }
     }
-
     cout<<"Intermediate code generated\n";
 }

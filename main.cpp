@@ -20,4 +20,3 @@ int main() {
     target_code();
     return 0;
 }
-
