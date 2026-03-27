@@ -6,5 +6,9 @@ app = Flask(__name__)
 def editor():
     return render_template('editor.html')
 
+@app.route("/output")
+def phase():
+    return render_template('phase.html')
+
 if __name__ == '__main__':  
    app.run(debug=True)
