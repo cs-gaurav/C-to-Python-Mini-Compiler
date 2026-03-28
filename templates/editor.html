@@ -2,19 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>Editor!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>Compiler</title>    
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/nasa-Q1p7bh3SHj8-unsplash.jpg') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-blend-mode: luminosity;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="container">
-        <p style="font-size: 42px;">
-            <span class="heading">C To Python</span> <span class="heading2">Compiler</span>
-        </p>
-        <textarea class="editor" placeholder="Enter C code here..."></textarea>
-        <button class="btn">COMPILE</button>
-    </div>
-    <script src="/static/script.js"></script>
+
+<div class="container">
+
+    <h1 class="heading">
+        C to Python <span class="heading2">Compiler</span>
+    </h1>    
+    <textarea id="code" class="editor" placeholder="Enter C code here..."></textarea>    
+    <button class="btn" onclick="compileCode()">COMPILE</button>
+</div>
+
+<script>
+function compileCode() {
+    let code = document.getElementById("code").value;
+
+    fetch("/compile", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "code=" + encodeURIComponent(code)
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.body.innerHTML = data;
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+</script>
+
 </body>
 </html>
