@@ -4,63 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
-    <title>Output</title>
-
-    <style>
-        .inner {
-            padding: 10px;
-            border: 1px solid #ccc;
-            margin: 5px;
-            height: 250px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            background: rgba(255,255,255,0.1);
-        }
-
-        .title {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Editor!</title>
 </head>
-
 <body>
     <div class="outer">
         <div class="container2">
             <p class="heading3">Output</p>
-
             <div class="container3">
-                
-                <div class="inner">
-                    <div class="title">Lexical Analysis</div>
-                    {{ lexer }}
-                </div>
-                
-                <div class="inner">
-                    <div class="title">Syntax Analysis</div>
-                    {{ parser }}
-                </div>
-                
-                <div class="inner">
-                    <div class="title">Semantic Analysis</div>
-                    {{ semantic }}
-                </div>
-                
-                <div class="inner">
-                    <div class="title">Three Address Code</div>
-                    {{ intermediate }}
-                </div>
-                
-                <div class="inner">
-                    <div class="title">Final Python</div>
-                    {{ python_code }}
-                </div>
-
+                <div class="inner"> Lexical Analysis </div>
+                <div class="inner"> Syntax Analysis </div>
             </div>
-
-            <br>
-            <a href="/">⬅ Back</a>
         </div>
     </div>
+    <script src="/static/script.js"></script>
 </body>
 </html>
