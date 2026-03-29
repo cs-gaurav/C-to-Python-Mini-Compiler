@@ -5,15 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>Editor!</title>
+    <title>Output</title>
 </head>
 <body>
     <div class="outer">
         <div class="container2">
             <p class="heading3">Output</p>
             <div class="container3">
-                <div class="inner"> Lexical Analysis </div>
-                <div class="inner"> Syntax Analysis </div>
+                <div class="inner">
+                    <b>Lexical Analysis</b>
+                    <pre>{{ lexer | safe }}</pre>
+                </div>
+                <div class="inner">
+                    <b>Syntax Analysis</b>
+                    <pre>{{ parser | safe }}</pre>
+                </div>
+                <div class="inner">
+                    <b>Semantic Analysis</b>
+                    <pre>{{ semantic | safe }}</pre>
+                </div>
+            </div>
+            <div class="container3">
+                <div class="inner">
+                    <b>Three Address Code</b>
+                    <pre>{{ tac | safe }}</pre>
+                </div>
+                <div class="inner">
+                    <b>Final Python Code</b>
+                    <pre>{{ python_code | safe }}</pre>
+                </div>
             </div>
         </div>
     </div>
