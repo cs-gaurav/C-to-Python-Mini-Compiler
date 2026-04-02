@@ -14,7 +14,7 @@ def compile_code():
 
     try:
         result = subprocess.run(
-            ["./main"],
+            ["main.exe"],  
             input=code + "\n\x1a",
             capture_output=True,
             text=True
@@ -30,12 +30,14 @@ def compile_code():
         python_code = []
 
         section = "lexer"
-        error_found = False
+
+        syntax_error = False
+        semantic_error = False
 
         for line in lines:
             line_lower = line.lower()
 
-           
+            
             if "compiler has started" in line_lower:
                 continue
             if "give some expression" in line_lower:
@@ -44,10 +46,17 @@ def compile_code():
                 continue
 
            
-            if "error" in line_lower:
+            if "syntax error" in line_lower or "invalid" in line_lower:
                 parser = [line.strip()]
-                error_found = True
+                syntax_error = True
                 section = "parser"
+                continue
+
+            
+            if "undeclared" in line_lower or "semantic error" in line_lower:
+                semantic = [line.strip()]
+                semantic_error = True
+                section = "semantic"
                 continue
 
             
@@ -59,11 +68,15 @@ def compile_code():
                 section = "tac"
                 continue
 
+            elif "intermediate code generated" in line_lower:
+                section = "tac"
+                continue
+
             elif "generated python code" in line_lower:
                 section = "python"
                 continue
 
-           
+            
             if section == "lexer":
                 lexer.append(line)
 
@@ -76,13 +89,24 @@ def compile_code():
                     python_code.append(line)
 
        
-        if not error_found:
-            parser = ["No Syntax Error"]
-            semantic = ["No Semantic Error"]
-        else:
+
+        
+        if syntax_error:
             semantic = []
             tac = []
-            python_code = []   
+            python_code = []
+
+        else:
+            parser = ["No Syntax Error"]
+
+            
+            if semantic_error:
+                tac = []
+                python_code = []
+
+            
+            else:
+                semantic = ["No Semantic Error"]
 
         return render_template(
             "phase.html",
