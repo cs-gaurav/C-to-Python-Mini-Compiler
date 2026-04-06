@@ -94,18 +94,17 @@ html,body {
 
 .container2 {
     background-color: rgba(0, 0, 0, 0.7);
-    width: 85%;
-    height: 80%;
+    width: 88%;
+    height: 88%;
     border-radius: 30px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
     border-color: rgb(193, 255, 238);
     border-width: 2px;
     border-style: solid;
 }
-
 
 .inner {
     display: flex;
@@ -113,9 +112,9 @@ html,body {
     align-items:center;      
     overflow: auto;
     padding: 12px;
-    height: 280px;
-    width: 280px;
-    background-color: rgba(255, 255, 255, 0.9);
+    height: 320px;
+    width: 310px;
+    background-color: rgba(255, 255, 255, 0.7);
     border-radius: 10px;
     font-size: 14px;              
     font-family: 'JetBrains Mono';
@@ -135,7 +134,10 @@ html,body {
     font-weight: bolder;
     color: #c1ffee;
     text-align: center;
-    font-size: 45px;
+    position: absolute; 
+    left: 50%; 
+    transform: translateX(-50%);
+    font-size: 54px;
 }
 
 b {
