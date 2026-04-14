@@ -14,7 +14,6 @@ int main() {
     }
     cout<<endl;
     parser();
-    cout<<"Parsing complete\n";
     semantic_analyzer();
     intermediate_code();
     target_code();
