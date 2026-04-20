@@ -1,21 +1,30 @@
-#include<iostream>
-#include"lexer.h"
-#include"parser.h"
-#include"semantic.h"
+#include <iostream>
+#include "lexer.h"
+#include "parser.h"
+#include "semantic.h"
 #include "inter.h"
 #include "target.h"
+
 using namespace std;
-int main() {
-    cout<<"compiler has started!"<<endl;
-    cout<<"give some expression!"<<endl;
+
+int main()
+{
+    cout << "compiler has started!" << endl;
+    cout << "give some expression!" << endl;
+
     lexer();
-    for (auto i:t) {
-        cout<<i.type<<" -> "<<i.lexeme<< endl;
+
+    for (auto i : t)
+    {
+        cout << i.type << " -> " << i.lexeme << endl;
     }
-    cout<<endl;
+
+    cout << endl;
+
     parser();
     semantic_analyzer();
     intermediate_code();
     target_code();
+
     return 0;
 }
