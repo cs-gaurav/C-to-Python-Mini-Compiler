@@ -7,7 +7,7 @@ using namespace std;
 
 string lastPrompt = "";
 
-// ------------------ EXPRESSION ------------------
+// ------------------ EXPRESSION (FIXED) ------------------
 string py_expression(int &i)
 {
     string left;
@@ -23,12 +23,26 @@ string py_expression(int &i)
         exit(1);
     }
 
-    while (t[i].type == "PLUS" || t[i].type == "MINUS")
+    // ✅ FIX: support all operators
+    while (t[i].type == "PLUS" || t[i].type == "MINUS" ||
+           t[i].type == "STAR" || t[i].type == "SLASH" ||
+           t[i].type == "MOD")
     {
         string op = t[i].lexeme;
         i++;
-        string right = t[i].lexeme;
-        i++;
+
+        string right;
+        if (t[i].type == "IDENTIFIER" || t[i].type == "NUMBER")
+        {
+            right = t[i].lexeme;
+            i++;
+        }
+        else
+        {
+            cout << "Error in expression\n";
+            exit(1);
+        }
+
         left = left + " " + op + " " + right;
     }
 
@@ -71,8 +85,7 @@ void handle_assignment_or_inc(vector<string> &code, int &i, string indent = "")
 // ------------------ SCANF ------------------
 void handle_scanf(vector<string> &code, int &i, string indent = "")
 {
-    i++; 
-    i++; 
+    i++; i++;
 
     if (t[i].type == "STRING") i++;
     if (t[i].type == "COMMA") i++;
@@ -179,13 +192,67 @@ void handle_if(vector<string> &code, int &i, string indent)
     }
 }
 
+// ------------------ FOR LOOP ------------------
+void handle_for(vector<string> &code, int &i)
+{
+    i++; i++;
+
+    string var = t[i].lexeme; i++;
+    i++;
+    string start = t[i].lexeme; i++;
+
+    while (t[i].type != "SEMI") i++;
+    i++;
+
+    i++; i++;
+    string end = t[i].lexeme; i++;
+
+    while (t[i].type != "RPAREN") i++;
+    i++;
+
+    if (t[i].type == "LBRACE") i++;
+
+    code.push_back("for " + var + " in range(" + start + ", " + end + "):");
+
+    int brace = 1;
+
+    while (brace > 0)
+    {
+        if (t[i].type == "LBRACE") brace++;
+        else if (t[i].type == "RBRACE") brace--;
+
+        if (brace == 0) break;
+
+        if (t[i].type == "IF")
+        {
+            handle_if(code, i, "    ");
+        }
+        else if (t[i].type == "PRINTF")
+        {
+            code.push_back("    print(\"" + t[i+2].lexeme + "\")");
+            while (t[i].type != "SEMI") i++;
+            i++;
+        }
+        else if (t[i].type == "IDENTIFIER")
+        {
+            handle_assignment_or_inc(code, i, "    ");
+        }
+        else
+        {
+            i++;
+        }
+    }
+
+    i++;
+}
+
 // ------------------ TARGET CODE ------------------
 void target_code()
 {
     vector<string> code;
     int i = 0;
 
-    i += 5; 
+    i += 5;
 
     while (t[i].type != "EOF" && t[i].type != "RBRACE")
     {
@@ -210,20 +277,27 @@ void target_code()
             i++;
         }
 
+        else if (t[i].type == "FOR")
+        {
+            handle_for(code, i);
+        }
+
+        else if (t[i].type == "IF")
+        {
+            handle_if(code, i, "");
+        }
+
         else if (t[i].type == "IDENTIFIER")
         {
             handle_assignment_or_inc(code, i);
         }
 
-        
         else if (t[i].type == "PRINTF")
         {
             string text = t[i+2].lexeme;
 
             if (lastPrompt != "")
-            {
                 code.push_back("print(\"" + lastPrompt + "\")");
-            }
 
             lastPrompt = text;
 
@@ -231,15 +305,9 @@ void target_code()
             i++;
         }
 
-        
         else if (t[i].type == "SCANF")
         {
             handle_scanf(code, i);
-        }
-
-        else if (t[i].type == "IF")
-        {
-            handle_if(code, i, "");
         }
 
         else
@@ -248,11 +316,9 @@ void target_code()
         }
     }
 
-    
     if (lastPrompt != "")
     {
         code.push_back("print(\"" + lastPrompt + "\")");
-        lastPrompt = "";
     }
 
     cout << "\nGenerated Python Code:\n\n";
