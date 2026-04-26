@@ -1,17 +1,43 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include "lexer.h"
 using namespace std;
+
+
+string expression(int &i);
+string term(int &i);
+string factor(int &i);
 
 static int tempCount = 1, labelCount = 1;
 
 string newTemp() { return "t" + to_string(tempCount++); }
 string newLabel() { return "L" + to_string(labelCount++); }
 
+// ---------------- FACTOR ----------------
 string factor(int &i)
 {
+    if (i >= t.size())
+        exit(1);
+
     if (t[i].type == "IDENTIFIER" || t[i].type == "NUMBER")
         return t[i++].lexeme;
+
+    
+    else if (t[i].type == "LPAREN")
+    {
+        i++;
+        string val = expression(i);
+
+        if (t[i].type != "RPAREN")
+        {
+            cout << "Missing )\n";
+            exit(1);
+        }
+        i++;
+        return val;
+    }
+
     else
     {
         cout << "Invalid factor\n";
@@ -19,47 +45,56 @@ string factor(int &i)
     }
 }
 
+// ---------------- TERM ----------------
 string term(int &i)
 {
     string left = factor(i);
+
     while (t[i].type == "STAR" || t[i].type == "SLASH" || t[i].type == "MOD")
     {
         string op = t[i].lexeme;
         i++;
         string right = factor(i);
+
         string temp = newTemp();
-        cout << temp << " = " << left << " " << op << " " << right << endl;
+        cout << temp << " = " << left << " " << op << " " << right << "\n";
+
         left = temp;
     }
     return left;
 }
 
+// ---------------- EXPRESSION ----------------
 string expression(int &i)
 {
     string left = term(i);
+
     while (t[i].type == "PLUS" || t[i].type == "MINUS")
     {
         string op = t[i].lexeme;
         i++;
         string right = term(i);
+
         string temp = newTemp();
-        cout << temp << " = " << left << " " << op << " " << right << endl;
+        cout << temp << " = " << left << " " << op << " " << right << "\n";
+
         left = temp;
     }
     return left;
 }
 
+// ---------------- CONDITION ----------------
 string condition_expr(int &i)
 {
     string left = expression(i);
     string op = t[i].lexeme;
     i++;
     string right = expression(i);
-    string temp = newTemp();
-    cout << temp << " = " << left << " " << op << " " << right << endl;
-    return temp;
+
+    return left + " " + op + " " + right;
 }
 
+// ---------------- DECLARATION ----------------
 void declaration(int &i)
 {
     i++;
@@ -67,12 +102,14 @@ void declaration(int &i)
     {
         string name = t[i].lexeme;
         i++;
+
         if (t[i].type == "ASSIGN")
         {
             i++;
             string res = expression(i);
-            cout << name << " = " << res << endl;
+            cout << name << " = " << res << "\n";
         }
+
         if (t[i].type == "COMMA")
         {
             i++;
@@ -80,6 +117,7 @@ void declaration(int &i)
         }
         break;
     }
+
     if (t[i].type != "SEMI")
     {
         cout << "Missing ;\n";
@@ -88,18 +126,23 @@ void declaration(int &i)
     i++;
 }
 
+// ---------------- ASSIGNMENT ----------------
 void assignment(int &i)
 {
     string name = t[i].lexeme;
     i++;
+
     if (t[i].type != "ASSIGN")
     {
         cout << "Expected =\n";
         exit(1);
     }
+
     i++;
     string res = expression(i);
-    cout << name << " = " << res << endl;
+
+    cout << name << " = " << res << "\n";
+
     if (t[i].type != "SEMI")
     {
         cout << "Missing ;\n";
@@ -108,24 +151,25 @@ void assignment(int &i)
     i++;
 }
 
+// ---------------- INC / DEC ----------------
 void inc_dec(int &i)
 {
     string var = t[i].lexeme;
     i++;
 
+    string temp = newTemp();
+
     if (t[i].type == "INCREMENT")
     {
         i++;
-        string temp = newTemp();
-        cout << temp << " = " << var << " + 1" << endl;
-        cout << var << " = " << temp << endl;
+        cout << temp << " = " << var << " + 1\n";
+        cout << var << " = " << temp << "\n";
     }
     else if (t[i].type == "DECREMENT")
     {
         i++;
-        string temp = newTemp();
-        cout << temp << " = " << var << " - 1" << endl;
-        cout << var << " = " << temp << endl;
+        cout << temp << " = " << var << " - 1\n";
+        cout << var << " = " << temp << "\n";
     }
 
     if (t[i].type == "SEMI")
@@ -133,6 +177,7 @@ void inc_dec(int &i)
 }
 
 void statements(int &i);
+
 
 void if_statement(int &i)
 {
@@ -143,110 +188,107 @@ void if_statement(int &i)
 
     string L1 = newLabel(), L2 = newLabel(), L3 = newLabel();
 
-    cout << "if " << cond << " goto " << L1 << endl;
-    cout << "goto " << L2 << endl;
+    cout << "if " << cond << " goto " << L1 << "\n";
+    cout << "goto " << L2 << "\n";
 
-    cout << L1 << ":" << endl;
+    cout << L1 << ":\n";
+
     i++;
 
     while (t[i].type != "RBRACE" && t[i].type != "EOF")
-    {
         statements(i);
-    }
 
     if (t[i].type == "RBRACE")
         i++;
 
     if (t[i].type == "ELSE")
     {
-        cout << "goto " << L3 << endl;
-        cout << L2 << ":" << endl;
+        cout << "goto " << L3 << "\n";
+        cout << L2 << ":\n";
 
         i += 2;
 
         while (t[i].type != "RBRACE" && t[i].type != "EOF")
-        {
             statements(i);
-        }
 
         if (t[i].type == "RBRACE")
             i++;
 
-        cout << L3 << ":" << endl;
+        cout << L3 << ":\n";
     }
     else
     {
-        cout << L2 << ":" << endl;
+        cout << L2 << ":\n";
     }
 }
+
 
 void for_loop(int &i)
 {
     i += 2;
 
-    while (t[i].type != "SEMI")
+    
+    if (t[i].type != "SEMI")
+        assignment(i);
+    else
         i++;
-    i++;
 
     string L1 = newLabel(), L2 = newLabel();
 
-    cout << L1 << ":" << endl;
+    cout << L1 << ":\n";
 
     string cond = condition_expr(i);
-    cout << "ifFalse " << cond << " goto " << L2 << endl;
+    cout << "ifFalse " << cond << " goto " << L2 << "\n";
 
     i++;
 
     int incIndex = i;
 
-    while (t[i].type != "RPAREN" && t[i].type != "EOF")
+    while (t[i].type != "RPAREN")
         i++;
 
     i++;
     i++;
 
     while (t[i].type != "RBRACE" && t[i].type != "EOF")
-    {
         statements(i);
-    }
 
+    
     if (t[incIndex].type == "IDENTIFIER")
     {
         string var = t[incIndex].lexeme;
+        string temp = newTemp();
 
         if (t[incIndex + 1].type == "INCREMENT")
         {
-            string temp = newTemp();
-            cout << temp << " = " << var << " + 1" << endl;
-            cout << var << " = " << temp << endl;
+            cout << temp << " = " << var << " + 1\n";
+            cout << var << " = " << temp << "\n";
         }
         else if (t[incIndex + 1].type == "DECREMENT")
         {
-            string temp = newTemp();
-            cout << temp << " = " << var << " - 1" << endl;
-            cout << var << " = " << temp << endl;
+            cout << temp << " = " << var << " - 1\n";
+            cout << var << " = " << temp << "\n";
         }
     }
 
-    cout << "goto " << L1 << endl;
-    cout << L2 << ":" << endl;
+    cout << "goto " << L1 << "\n";
+    cout << L2 << ":\n";
 
     if (t[i].type == "RBRACE")
         i++;
 }
 
+
 void while_loop(int &i)
 {
     i += 2;
 
-    string L1 = newLabel();
-    string L2 = newLabel();
+    string L1 = newLabel(), L2 = newLabel();
 
-    cout << L1 << ":" << endl;
+    cout << L1 << ":\n";
 
     string cond = condition_expr(i);
-
-    cout << "ifFalse " << cond << " goto " << L2 << endl;
+    cout << "ifFalse " << cond << " goto " << L2 << "\n";
 
     if (t[i].type == "RPAREN")
         i++;
@@ -254,32 +296,54 @@ void while_loop(int &i)
         i++;
 
     while (t[i].type != "RBRACE" && t[i].type != "EOF")
-    {
         statements(i);
-    }
 
-    cout << "goto " << L1 << endl;
-    cout << L2 << ":" << endl;
+    cout << "goto " << L1 << "\n";
+    cout << L2 << ":\n";
 
     if (t[i].type == "RBRACE")
         i++;
 }
 
+
 void io_statement(int &i)
 {
     if (t[i].type == "PRINTF")
     {
-        cout << "print " << t[i + 2].lexeme << endl;
+        int j = i + 2; 
 
-        while (t[i].type != "SEMI" && t[i].type != "EOF")
+       
+        if (t[j].type == "STRING")
+            j++;
+
+        
+        if (t[j].type == "COMMA")
+            j++;
+
+        int paramCount = 0;
+
+        while (t[j].type == "IDENTIFIER")
+        {
+            cout << "param " << t[j].lexeme << "\n";
+            paramCount++;
+            j++;
+
+            if (t[j].type == "COMMA")
+                j++;
+            else
+                break;
+        }
+
+        cout << "call printf, " << paramCount << "\n";
+
+        while (t[i].type != "SEMI")
             i++;
-        if (t[i].type == "SEMI")
-            i++;
+        i++;
     }
+
     else if (t[i].type == "SCANF")
     {
-        i++;
-        i++;
+        i += 2;
 
         if (t[i].type == "STRING")
             i++;
@@ -292,16 +356,16 @@ void io_statement(int &i)
 
         if (t[i].type == "IDENTIFIER")
         {
-            cout << "input " << t[i].lexeme << endl;
+            cout << "input " << t[i].lexeme << "\n";
             i++;
         }
 
-        while (t[i].type != "SEMI" && t[i].type != "EOF")
+        while (t[i].type != "SEMI")
             i++;
-        if (t[i].type == "SEMI")
-            i++;
+        i++;
     }
 }
+
 
 void statements(int &i)
 {
@@ -310,9 +374,7 @@ void statements(int &i)
 
     else if (t[i].type == "IDENTIFIER" &&
              (t[i + 1].type == "INCREMENT" || t[i + 1].type == "DECREMENT"))
-    {
         inc_dec(i);
-    }
 
     else if (t[i].type == "IDENTIFIER")
         assignment(i);
@@ -331,27 +393,24 @@ void statements(int &i)
 
     else if (t[i].type == "RETURN")
     {
+        cout << "return\n";
+        while (t[i].type != "SEMI")
+            i++;
         i++;
-        if (t[i].type == "IDENTIFIER" || t[i].type == "NUMBER")
-            i++;
-        if (t[i].type == "SEMI")
-            i++;
     }
 
     else if (t[i].type == "RBRACE")
-    {
         return;
-    }
 
     else
-    {
         i++;
-    }
 }
+
 
 void intermediate_code()
 {
     int i = 0;
+
     i += 5;
 
     while (t[i].type != "EOF")
