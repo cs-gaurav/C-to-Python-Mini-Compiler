@@ -1,11 +1,44 @@
 #include<iostream>
+#include<vector>
+#include<string>
 #include "lexer.h"
 using namespace std;
 
-int pos=0;
+int pos = 0;
+
+int node_id = 0;
+vector<string> dot_nodes;
+vector<string> dot_edges;
+vector<int> parent_stack;
+
+int addNode(string label) {
+    int id = node_id++;
+    dot_nodes.push_back("node" + to_string(id) + " [label=\"" + label + "\"];");
+
+    if (!parent_stack.empty()) {
+        dot_edges.push_back(
+            "node" + to_string(parent_stack.back()) +
+            " -> node" + to_string(id) + ";"
+        );
+    }
+    return id;
+}
+
+void pushNode(string label) {
+    int id = addNode(label);
+    parent_stack.push_back(id);
+}
+
+void popNode() {
+    if (!parent_stack.empty()) parent_stack.pop_back();
+}
+
 
 void match(string next) {
-    if (t[pos].type==next) pos++;
+    if (t[pos].type == next) {
+        addNode(t[pos].lexeme);
+        pos++;
+    }
     else {
         cout<<"Syntax Error at token: "<<t[pos].type<<"\n";
         exit(1);
@@ -13,7 +46,10 @@ void match(string next) {
 }
 
 void value() {
-    if (t[pos].type=="IDENTIFIER" || t[pos].type=="NUMBER") pos++;
+    if (t[pos].type=="IDENTIFIER" || t[pos].type=="NUMBER") {
+        addNode(t[pos].lexeme);
+        pos++;
+    }
     else {
         cout<<"Invalid value at token: "<<t[pos].type<<"\n";
         exit(1);
@@ -21,13 +57,16 @@ void value() {
 }
 
 void unary_expr() {
+    pushNode("unary");
+
     if (t[pos].type=="INCREMENT" || t[pos].type=="DECREMENT") {
-        pos++;
+        match(t[pos].type);
         match("IDENTIFIER");
     }
     else if (t[pos].type=="IDENTIFIER") {
         match("IDENTIFIER");
-        if (t[pos].type=="INCREMENT" || t[pos].type=="DECREMENT") pos++;
+        if (t[pos].type=="INCREMENT" || t[pos].type=="DECREMENT")
+            match(t[pos].type);
     }
     else if (t[pos].type=="NUMBER") {
         match("NUMBER");
@@ -36,54 +75,84 @@ void unary_expr() {
         cout<<"Invalid unary expression at token: "<<t[pos].type<<"\n";
         exit(1);
     }
+
+    popNode();
 }
 
 void expression() {
+    pushNode("expr");
+
     unary_expr();
-    while (t[pos].type=="PLUS" || t[pos].type=="MINUS" ||
-           t[pos].type=="STAR" || t[pos].type=="SLASH" ||
-           t[pos].type=="MOD") {
-        pos++;
-        unary_expr();
+
+    if (t[pos].type=="PLUS" || t[pos].type=="MINUS" ||
+        t[pos].type=="STAR" || t[pos].type=="SLASH" ||
+        t[pos].type=="MOD") {
+
+        pushNode("op");
+        match(t[pos].type);
+        popNode();
+
+        expression();   // recursion = tree shape
     }
+
+    popNode();
 }
 
 void comparison() {
+    pushNode("comp");
+
     if (t[pos].type=="GT" || t[pos].type=="LT" ||
         t[pos].type=="GTQ" || t[pos].type=="LTQ" ||
         t[pos].type=="EQ" || t[pos].type=="NTQ") {
-        pos++;
-    } else {
+        match(t[pos].type);
+    } 
+    else {
         cout<<"Invalid comparison operator at token: "<<t[pos].type<<"\n";
         exit(1);
     }
+
+    popNode();
 }
 
 void comparison_expr() {
+    pushNode("cmp_expr");
+
     value();
     comparison();
     value();
+
+    popNode();
 }
 
 void bool_factor();
 
 void bool_expr() {
+    pushNode("bool_expr");
+
     bool_factor();
     while (t[pos].type=="OR") {
         match("OR");
         bool_factor();
     }
+
+    popNode();
 }
 
 void bool_term() {
+    pushNode("bool_term");
+
     bool_factor();
     while (t[pos].type=="AND") {
         match("AND");
         bool_factor();
     }
+
+    popNode();
 }
 
 void bool_factor() {
+    pushNode("bool_factor");
+
     if (t[pos].type=="LPAREN") {
         match("LPAREN");
         bool_expr();
@@ -91,39 +160,56 @@ void bool_factor() {
     } else {
         comparison_expr();
     }
+
+    popNode();
 }
 
 void declaration() {
+    pushNode("DECL");
+
     match("INT");
+
     while (true) {
         match("IDENTIFIER");
+
         if (t[pos].type=="ASSIGN") {
             match("ASSIGN");
             expression();
         }
-        if (t[pos].type=="COMMA") {
-            match("COMMA");
-        }
+
+        if (t[pos].type=="COMMA") match("COMMA");
         else break;
     }
 
     match("SEMI");
+
+    popNode();
 }
 
 void assignment() {
+    pushNode("ASSIGN");
+
     match("IDENTIFIER");
     match("ASSIGN");
     expression();
     match("SEMI");
+
+    popNode();
 }
 
 void parse_return() {
+    pushNode("RETURN");
+
     match("RETURN");
     expression();
     match("SEMI");
+
+    popNode();
 }
 
 void io_statement() {
+    pushNode("IO");
+
     if (t[pos].type=="PRINTF") {
         match("PRINTF");
         match("LPAREN");
@@ -151,11 +237,15 @@ void io_statement() {
         match("RPAREN");
         match("SEMI");
     }
+
+    popNode();
 }
 
 void inner_condition();
 
 void condition() {
+    pushNode("IF");
+
     match("IF");
     match("LPAREN");
     bool_expr();
@@ -171,9 +261,13 @@ void condition() {
         inner_condition();
         match("RBRACE");
     }
+
+    popNode();
 }
 
 void for_loop() {
+    pushNode("FOR");
+
     match("FOR");
     match("LPAREN");
 
@@ -195,9 +289,13 @@ void for_loop() {
     match("LBRACE");
     inner_condition();
     match("RBRACE");
+
+    popNode();
 }
 
 void statements() {
+    pushNode("STMT");
+
     if (t[pos].type=="INT") declaration();
 
     else if (t[pos].type=="IDENTIFIER") {
@@ -222,6 +320,8 @@ void statements() {
         cout<<"Invalid Statement at token: "<<t[pos].type<<"\n";
         exit(1);
     }
+
+    popNode();
 }
 
 void inner_condition() {
@@ -237,17 +337,39 @@ void inner_code() {
 }
 
 void begin() {
+    pushNode("PROGRAM");
+
     match("INT");
     match("MAIN");
     match("LPAREN");
     match("RPAREN");
+
+    pushNode("BLOCK");
+
     match("LBRACE");
     inner_code();
     match("RBRACE");
+
+    popNode();
+    popNode();
 }
 
 void parser() {
     begin();
-    if (t[pos].type!="EOF") cout<<"Unexpected Tokens\n";
-    else cout<<"Parsing Successful\n";
+
+    if (t[pos].type!="EOF") {
+        cout<<"Unexpected Tokens\n";
+    }
+    else {
+        cout<<"Parsing Successful\n";
+
+        cout << "PARSE_TREE_START\n";
+        cout << "digraph G {\n";
+
+        for (auto &n : dot_nodes) cout << n << "\n";
+        for (auto &e : dot_edges) cout << e << "\n";
+
+        cout << "}\n";
+        cout << "PARSE_TREE_END\n";
+    }
 }
