@@ -4,7 +4,6 @@
 #include "lexer.h"
 using namespace std;
 
-
 string expression(int &i);
 string term(int &i);
 string factor(int &i);
@@ -23,7 +22,6 @@ string factor(int &i)
     if (t[i].type == "IDENTIFIER" || t[i].type == "NUMBER")
         return t[i++].lexeme;
 
-    
     else if (t[i].type == "LPAREN")
     {
         i++;
@@ -126,7 +124,7 @@ void declaration(int &i)
     i++;
 }
 
-// ---------------- ASSIGNMENT ----------------
+
 void assignment(int &i)
 {
     string name = t[i].lexeme;
@@ -151,7 +149,7 @@ void assignment(int &i)
     i++;
 }
 
-// ---------------- INC / DEC ----------------
+
 void inc_dec(int &i)
 {
     string var = t[i].lexeme;
@@ -178,7 +176,7 @@ void inc_dec(int &i)
 
 void statements(int &i);
 
-
+// ---------------- IF ----------------
 void if_statement(int &i)
 {
     i += 2;
@@ -222,13 +220,13 @@ void if_statement(int &i)
     }
 }
 
-
+// ---------------- FOR (FIXED) ----------------
 void for_loop(int &i)
 {
     i += 2;
 
     
-    if (t[i].type != "SEMI")
+    if (t[i].type == "IDENTIFIER" && t[i+1].type == "ASSIGN")
         assignment(i);
     else
         i++;
@@ -247,13 +245,13 @@ void for_loop(int &i)
     while (t[i].type != "RPAREN")
         i++;
 
-    i++;
-    i++;
+    i++; 
+    i++; 
 
     while (t[i].type != "RBRACE" && t[i].type != "EOF")
         statements(i);
 
-    
+    // increment
     if (t[incIndex].type == "IDENTIFIER")
     {
         string var = t[incIndex].lexeme;
@@ -262,11 +260,6 @@ void for_loop(int &i)
         if (t[incIndex + 1].type == "INCREMENT")
         {
             cout << temp << " = " << var << " + 1\n";
-            cout << var << " = " << temp << "\n";
-        }
-        else if (t[incIndex + 1].type == "DECREMENT")
-        {
-            cout << temp << " = " << var << " - 1\n";
             cout << var << " = " << temp << "\n";
         }
     }
@@ -278,53 +271,21 @@ void for_loop(int &i)
         i++;
 }
 
-
-void while_loop(int &i)
-{
-    i += 2;
-
-    string L1 = newLabel(), L2 = newLabel();
-
-    cout << L1 << ":\n";
-
-    string cond = condition_expr(i);
-    cout << "ifFalse " << cond << " goto " << L2 << "\n";
-
-    if (t[i].type == "RPAREN")
-        i++;
-    if (t[i].type == "LBRACE")
-        i++;
-
-    while (t[i].type != "RBRACE" && t[i].type != "EOF")
-        statements(i);
-
-    cout << "goto " << L1 << "\n";
-    cout << L2 << ":\n";
-
-    if (t[i].type == "RBRACE")
-        i++;
-}
-
-
+// ---------------- IO (FIXED) ----------------
 void io_statement(int &i)
 {
     if (t[i].type == "PRINTF")
     {
-        int j = i + 2; 
-
-       
-        if (t[j].type == "STRING")
-            j++;
-
-        
-        if (t[j].type == "COMMA")
-            j++;
-
+        int j = i + 2;
         int paramCount = 0;
 
-        while (t[j].type == "IDENTIFIER")
+        while (t[j].type == "STRING" || t[j].type == "IDENTIFIER")
         {
-            cout << "param " << t[j].lexeme << "\n";
+            if (t[j].type == "STRING")
+                cout << "param \"" << t[j].lexeme << "\"\n";
+            else
+                cout << "param " << t[j].lexeme << "\n";
+
             paramCount++;
             j++;
 
@@ -340,33 +301,9 @@ void io_statement(int &i)
             i++;
         i++;
     }
-
-    else if (t[i].type == "SCANF")
-    {
-        i += 2;
-
-        if (t[i].type == "STRING")
-            i++;
-
-        if (t[i].type == "COMMA")
-            i++;
-
-        if (t[i].type == "AMP")
-            i++;
-
-        if (t[i].type == "IDENTIFIER")
-        {
-            cout << "input " << t[i].lexeme << "\n";
-            i++;
-        }
-
-        while (t[i].type != "SEMI")
-            i++;
-        i++;
-    }
 }
 
-
+// ---------------- STATEMENTS ----------------
 void statements(int &i)
 {
     if (t[i].type == "INT")
@@ -385,10 +322,7 @@ void statements(int &i)
     else if (t[i].type == "FOR")
         for_loop(i);
 
-    else if (t[i].type == "WHILE")
-        while_loop(i);
-
-    else if (t[i].type == "PRINTF" || t[i].type == "SCANF")
+    else if (t[i].type == "PRINTF")
         io_statement(i);
 
     else if (t[i].type == "RETURN")
@@ -399,18 +333,14 @@ void statements(int &i)
         i++;
     }
 
-    else if (t[i].type == "RBRACE")
-        return;
-
     else
         i++;
 }
 
-
+// ---------------- DRIVER ----------------
 void intermediate_code()
 {
     int i = 0;
-
     i += 5;
 
     while (t[i].type != "EOF")
