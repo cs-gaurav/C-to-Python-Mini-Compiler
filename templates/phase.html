@@ -55,15 +55,15 @@
             </div>
 
             <div class="box">
-                <b>Final Python Code</b>
+                <b>Python Code</b>
                 <pre>{{ python_code }}</pre>
             </div>
 
             {% endif %}
         </div>
 
-        <h3 class="tree-title">Parse Tree</h3>
         {% if not syntax_error and not semantic_error %}
+        <h3 class="tree-title">Parse Tree</h3>
         <div class="tree-container">
             {% if tree_image %}
                 <img src="/{{ tree_image }}" class="tree-img">

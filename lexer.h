@@ -8,6 +8,7 @@ using namespace std;
 struct token {
     string type;
     string lexeme;
+    int line;
 };
 extern vector<token> t;
 

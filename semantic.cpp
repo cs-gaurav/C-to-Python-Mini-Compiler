@@ -8,8 +8,8 @@ struct Var{ bool initialized=false; };
 unordered_map<string,Var> table;
 
 void sem_error(string msg,string name=""){
-    cout<<"Error: "<<msg;
-    if(name!="") cout<<" -> "<<name;
+    cout<<msg;
+    if(name!="") cout<<": "<<name;
     cout<<endl;
     exit(1);
 }

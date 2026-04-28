@@ -147,6 +147,7 @@ pre {
     background: rgba(255, 255, 255);
     font-family: 'JetBrains Mono';
     padding: 15px;
+    gap: 5px;
     overflow-y: auto;
     overflow-x: auto;
     white-space: pre;
@@ -178,15 +179,16 @@ pre {
     color: #ffffff;
     text-align: center;
     font-family: 'JetBrains Mono';
-    font-size: larger;
-    margin-top: 25px;
-    margin-bottom: 8px;
+    font-size:larger ;
+    margin-top: 20px;
+    margin-bottom: 1px;
 }
 
 .tree-img {
-    max-width: 130%;
+    max-width: 135%;
     height: auto;
     display: block;
     margin: 0 auto;
     object-fit: contain;
+    padding: 10px;
 }

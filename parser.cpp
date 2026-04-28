@@ -40,7 +40,8 @@ void match(string next) {
         pos++;
     }
     else {
-        cout<<"Syntax Error at token: "<<t[pos].type<<"\n";
+        cout<<"Syntax Error at line "<<t[pos].line<<"\n";
+        cout<<"Unexpected token: "<<t[pos].lexeme<<"\n";
         exit(1);
     }
 }
@@ -51,7 +52,8 @@ void value() {
         pos++;
     }
     else {
-        cout<<"Invalid value at token: "<<t[pos].type<<"\n";
+        cout<<"Syntax Error at line "<<t[pos].line<<"\n";
+        cout<<"Unexpected token: "<<t[pos].lexeme<<"\n";
         exit(1);
     }
 }
@@ -72,7 +74,8 @@ void unary_expr() {
         match("NUMBER");
     }
     else {
-        cout<<"Invalid unary expression at token: "<<t[pos].type<<"\n";
+        cout<<"Syntax Error at line "<<t[pos].line<<"\n";
+        cout<<"Unexpected token: "<<t[pos].lexeme<<"\n";
         exit(1);
     }
 
@@ -107,7 +110,8 @@ void comparison() {
         match(t[pos].type);
     } 
     else {
-        cout<<"Invalid comparison operator at token: "<<t[pos].type<<"\n";
+        cout<<"Syntax Error at line "<<t[pos].line<<"\n";
+        cout<<"Unexpected token: "<<t[pos].lexeme<<"\n";
         exit(1);
     }
 
@@ -157,7 +161,8 @@ void bool_factor() {
         match("LPAREN");
         bool_expr();
         match("RPAREN");
-    } else {
+    } 
+    else {
         comparison_expr();
     }
 
@@ -317,7 +322,8 @@ void statements() {
     else if (t[pos].type=="PRINTF" || t[pos].type=="SCANF") io_statement();
 
     else {
-        cout<<"Invalid Statement at token: "<<t[pos].type<<"\n";
+        cout<<"Syntax Error at line "<<t[pos].line<<"\n";
+        cout<<"Unexpected token: "<<t[pos].lexeme<<"\n";
         exit(1);
     }
 
@@ -331,7 +337,7 @@ void inner_condition() {
 }
 
 void inner_code() {
-    while (t[pos].type!="RBRACE" && t[pos].type!="EOF") {
+    while (t[pos].type!="RETURN" && t[pos].type!="RBRACE" && t[pos].type!="EOF") {
         statements();
     }
 }
@@ -348,6 +354,21 @@ void begin() {
 
     match("LBRACE");
     inner_code();
+    if (t[pos].type != "RETURN") {
+        cout<<"Syntax Error: main must end with return 0;\n";
+        exit(1);
+    }
+
+    match("RETURN");
+
+    if (t[pos].type != "NUMBER" || t[pos].lexeme != "0") {
+        cout<<"Syntax Error: main must return 0\n";
+        exit(1);
+    }
+
+    match("NUMBER");
+    match("SEMI");
+
     match("RBRACE");
 
     popNode();
@@ -366,8 +387,8 @@ void parser() {
         cout << "PARSE_TREE_START\n";
         cout << "digraph G {\n";
 
-        for (auto &n : dot_nodes) cout << n << "\n";
-        for (auto &e : dot_edges) cout << e << "\n";
+        for (auto &n : dot_nodes) cout <<n<<"\n";
+        for (auto &e : dot_edges) cout <<e<<"\n";
 
         cout << "}\n";
         cout << "PARSE_TREE_END\n";

@@ -86,6 +86,10 @@ def compile_code():
                 section = "parser"
                 continue
 
+            if "unexpected token" in line_lower:
+                parser.append(line.strip())
+                continue
+
             if "undeclared" in line_lower or "semantic error" in line_lower:
                 semantic = [line.strip()]
                 semantic_error = True
